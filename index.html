@@ -791,7 +791,7 @@
 
                 <h3 id="p1-win32">Tag 001–002: Das Win32-Fenster von Grund auf</h3>
                 <p>
-                    Casey beginnt nicht mit einem Framework oder einer Engine. Er beginnt mit einem leeren C-Datei 
+                    Casey beginnt nicht mit einem Framework oder einer Engine. Er beginnt mit einer leeren C-Datei 
                     und der Frage: "Wie öffnet man unter Windows überhaupt ein Fenster?" Das ist bewusst so gewählt, 
                     denn das Verständnis der Grundlagen ist das Fundament für alles, was folgt.
                 </p>
@@ -1030,17 +1030,19 @@
                 <p>
                     Casey implementiert den Backbuffer als <strong>Device-Independent Bitmap (DIB)</strong>. Das 
                     ist nichts anderes als ein großes Array von Bytes im Speicher, das Windows als Bitmap interpretieren 
-                    kann. Jedes Pixel belegt 4 Bytes: Blau, Grün, Rot, Alpha (oder bei uns zunächst nur Blau, Grün, 
-                    Rot, wobei das vierte Byte auf 0xFF gesetzt wird).
+                    kann. Jedes Pixel belegt 4 Bytes: Blau, Grün, Rot und ein Padding-Byte (das später als
+                    Alpha-Kanal genutzt wird).
                 </p>
 
                 <div class="info-box">
                     <h4>🔷 Warum BGR und nicht RGB?</h4>
                     <p>
-                        Windows verwendet für historische Gründe die Reihenfolge <strong>Blue-Green-Red (BGR)</strong> 
-                        statt RGB. Wenn du also ein Pixel mit dem Wert <code>0xFF0000</code> schreibst, erscheint es 
-                        auf dem Bildschirm als <strong>Blau</strong>, nicht als Rot! Das ist einer dieser klassischen 
-                        Windows-Fallstricke, die dich stundenlang verrückt machen können, wenn du es nicht weißt.
+                        Windows verwendet aus historischen Gründen die Byte-Reihenfolge <strong>Blue-Green-Red (BGR)</strong>
+                        im Speicher. Wenn du Pixel-Daten Byte für Byte schreibst und dabei RGB-Reihenfolge annimmst,
+                        landest du bei vertauschten Rot- und Blau-Kanälen. Bei 32-Bit-Pixeln als <code>uint32</code>
+                        ist das Layout <code>0xAARRGGBB</code> — hier entspricht <code>0x00FF0000</code> tatsächlich Rot,
+                        weil Little-Endian und BGR sich gegenseitig aufheben. Der Fallstrick lauert vor allem beim
+                        direkten Byte-Zugriff über Pointer.
                     </p>
                 </div>
 
@@ -1110,10 +1112,10 @@
                     Y nach unten wächst.
                 </p>
                 <p>
-                    <strong><code>Pitch</code></strong>: Die Pitch beschreibt, wie viele Bytes eine komplette 
-                    Zeile im Speicher belegt — einschließlich möglichen Paddings. Manche Grafik-APIs verlangen, 
-                    dass jede Zeile auf eine bestimmte Byte-Grenze ausgerichtet ist (z. B. 4 Bytes oder 16 Bytes). 
-                    In unserem einfachen Fall ist die Pitch einfach <code>Width * 4</code>, aber professionelle 
+                    <strong><code>Pitch</code></strong>: Der Pitch beschreibt, wie viele Bytes eine komplette
+                    Zeile im Speicher belegt — einschließlich möglichen Paddings. Manche Grafik-APIs verlangen,
+                    dass jede Zeile auf eine bestimmte Byte-Grenze ausgerichtet ist (z. B. 4 Bytes oder 16 Bytes).
+                    In unserem einfachen Fall ist der Pitch einfach <code>Width * 4</code>, aber professionelle
                     Renderer müssen hier oft Padding einfügen.
                 </p>
 
@@ -1328,9 +1330,11 @@
                 <h4>Timing (Tag 010)</h4>
                 <p>
                     Um die Geschwindigkeit des Spiels unabhängig von der Framerate zu machen, brauchen wir 
-                    präzises Timing. Casey führt <code>QueryPerformanceCounter</code> ein — die hochpräzise 
-                    Hardware-Zeitquelle von Windows. Dieser Counter läuft mit der CPU-Taktfrequenz und hat eine 
-                    Auflösung im Nanosekunden-Bereich.
+                    präzises Timing. Casey führt <code>QueryPerformanceCounter</code> ein — die hochpräzise
+                    Hardware-Zeitquelle von Windows. Dieser Counter nutzt einen festen Hardware-Timer
+                    (je nach System HPET, TSC oder ACPI PM Timer) und hat eine Auflösung im
+                    Mikro- bis Nanosekunden-Bereich. Die genaue Frequenz ermittelt man mit
+                    <code>QueryPerformanceFrequency</code>.
                 </p>
 
                 <div class="step-box">
@@ -2449,8 +2453,8 @@ FILETIME NewDLLWriteTime = <span class="c-f">GetLastWriteTime</span>(SourceDLLNa
                 <h4>Warum SIMD?</h4>
                 <p>
                     In der Computergrafik führst du oft dieselbe Operation auf vielen Pixeln gleichzeitig aus. 
-                    Wenn du vier Pixel gleichzeitig verarbeiten kannst, verdoppelst du (theoretisch) die 
-                    Geschwindigkeit um den Faktor 4. In der Praxis ist der Faktor oft etwas niedriger, weil 
+                    Wenn du vier Pixel gleichzeitig verarbeiten kannst, steigerst du den Durchsatz
+                    theoretisch um den Faktor 4. In der Praxis ist der Faktor oft etwas niedriger, weil 
                     SIMD-Code mehr Overhead hat (Daten müssen aligned sein, Schleifen müssen für Rest-Elemente 
                     behandelt werden, etc.), aber für innere Schleifen kann SIMD enorme Unterschiede machen.
                 </p>
@@ -2608,7 +2612,7 @@ __m128 Result = _mm_add_ps(A, B);
                 <p>
                     In <strong>Tag 143</strong> wird <strong>Pitch-Shifting</strong> implementiert. Wenn ein Sound 
                     schneller oder langsamer abgespielt werden soll (z. B. Schritte mit unterschiedlicher Geschwindigkeit 
-                    oder eine Motorgeräusch, das sich mit der Drehzahl ändert), müssen wir nicht bei jedem Output-Sample 
+                    oder ein Motorengeräusch, das sich mit der Drehzahl ändert), müssen wir nicht bei jedem Output-Sample 
                     einen neuen Wert aus dem Source-Buffer lesen. Stattdessen laufen wir mit einem 
                     <strong>fraktionalen Index</strong> durch den Source-Buffer.
                 </p>
@@ -2859,7 +2863,7 @@ Sound->SampleIndex += (Sound->SourceSampleRate / (<span class="c-k">real32</span
                 </p>
                 <ul>
                     <li><strong>Performance Graphen</strong>: Balkendiagramme, die die Frame-Zeit über die letzten 
-                        Sekunden anzeigen. Du sieht sofort, wenn ein Frame "hängt".</li>
+                        Sekunden anzeigen. Du siehst sofort, wenn ein Frame "hängt".</li>
                     <li><strong>Hierarchische Variablen</strong>: Ein Tree-View, in dem alle Debug-Variablen 
                         organisiert sind. Du kannst Variablen nach Kategorien gruppieren (z. B. "Rendering/Licht", 
                         "Physik/Kollision").</li>
@@ -2960,15 +2964,17 @@ TreeKey.Material = 5;    <span class="c-c">// Baum-Texture</span></code></pre>
                 <h4>Radix Sort</h4>
                 <p>
                     In <strong>Tag 234</strong> wird <strong>Radix Sort</strong> implementiert. Radix Sort ist ein 
-                    nicht-vergleichender Sortieralgorithmus, der in <code>O(n)</code> arbeitet — also linear in 
-                    der Anzahl der Elemente. Für 64-Bit-Keys sortiert man in zwei Durchgängen (je 32 Bit) mit 
-                    Counting Sort.
+                    nicht-vergleichender Sortieralgorithmus, der in <code>O(n · k)</code> arbeitet — wobei
+                    <code>k</code> die Anzahl der Zifferngruppen ist. Für 64-Bit-Keys sortiert man typischerweise
+                    in 8 Durchgängen (je 8 Bit) mit Counting Sort, was in der Praxis linear skaliert.
                 </p>
                 <p>
-                    <strong>Warum Radix Sort statt Quicksort?</strong> Quicksort hat eine durchschnittliche 
-                    Komplexität von <code>O(n log n)</code>. Für 10.000 Render-Elemente bedeutet das etwa 
-                    10.000 × log₂(10.000) ≈ 130.000 Vergleiche. Radix Sort braucht nur 2 Durchgänge über das 
-                    Array — also etwa 20.000 Operationen. Das ist 6–7 Mal schneller.
+                    <strong>Warum Radix Sort statt Quicksort?</strong> Quicksort hat eine durchschnittliche
+                    Komplexität von <code>O(n log n)</code>. Für 10.000 Render-Elemente bedeutet das etwa
+                    10.000 × log₂(10.000) ≈ 130.000 Vergleiche — wobei jeder Vergleich eine Branch-Prediction-
+                    Herausforderung für die CPU ist. Radix Sort braucht 8 lineare Durchgänge ohne Verzweigungen.
+                    Das ist dank besserer Cache-Nutzung und fehlender Branch Mispredictions in der Praxis
+                    oft deutlich schneller.
                 </p>
 
                 <div class="info-box tip">
@@ -3067,8 +3073,8 @@ TreeKey.Material = 5;    <span class="c-c">// Baum-Texture</span></code></pre>
                 <p>
                     In <strong>Tag 243–244</strong> wird ein System für <strong>asynchrone Textur-Downloads</strong> 
                     gebaut. Die Idee: Der Haupt-Thread rendert das Spiel, während Worker-Threads neue Texturen 
-                    in den GPU-Speicher laden. Das erfordert mehrere OpenGL-Contexts, die sich einen Context 
-                    teilen (Share Lists).
+                    in den GPU-Speicher laden. Das erfordert mehrere OpenGL-Contexts, die sich über Share Lists
+                    GPU-Ressourcen wie Texturen und Buffer teilen.
                 </p>
                 <p>
                     <strong>Warum ist das wichtig?</strong> Wenn du eine große Textur synchron lädst, blockiert 
@@ -3299,8 +3305,8 @@ AccumulatedLight /= RayCount;</code></pre>
                         normale 2D-Textur zu speichern.
                     </p>
                     <p>
-                        Der Name kommt daher, dass die Projektion ein Oktaeder (ein Doppelpyramide mit 8 
-                        Dreiecksgesichtern) verwendet. Das Oktaeder wird dann in ein Quadrat abgeflacht.
+                        Der Name kommt daher, dass die Projektion ein Oktaeder (eine Doppelpyramide mit 8
+                        dreieckigen Seitenflächen) verwendet. Das Oktaeder wird dann in ein Quadrat abgeflacht.
                     </p>
                 </div>
 
