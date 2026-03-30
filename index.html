@@ -415,18 +415,75 @@
             cursor: pointer;
         }
 
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s;
-            }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .mobile-header { display: flex; }
-            .hero { padding-top: 6rem; }
-            .content-section { padding: 1.5rem; }
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.75rem; }
+        /* Fehlende Keyframes (vorher referenziert aber nie definiert) */
+        @keyframes logoCursorAppear {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes logoGradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        /* Footer-Styles (aus dem Body hierher konsolidiert) */
+        @keyframes footerGradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+        @keyframes footerGlowPulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.95); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+        .footer-logo::before {
+            content: '';
+            position: absolute;
+            inset: -8px -12px;
+            background: radial-gradient(ellipse at center, rgba(34,211,238,0.15) 0%, transparent 70%);
+            opacity: 0;
+            animation: footerGlowPulse 3s ease-in-out infinite;
+            pointer-events: none;
+            border-radius: 8px;
+        }
+        .footer-logo:hover .logo-char {
+            animation: logoCharWave 0.4s ease forwards;
+        }
+        .footer-logo:hover .logo-char:nth-child(1) { animation-delay: 0s; }
+        .footer-logo:hover .logo-char:nth-child(2) { animation-delay: 0.03s; }
+        .footer-logo:hover .logo-char:nth-child(3) { animation-delay: 0.06s; }
+        .footer-logo:hover .logo-char:nth-child(4) { animation-delay: 0.09s; }
+        .footer-logo:hover .logo-char:nth-child(5) { animation-delay: 0.12s; }
+        .footer-logo:hover .logo-char:nth-child(6) { animation-delay: 0.15s; }
+        .footer-logo:hover .logo-char:nth-child(7) { animation-delay: 0.18s; }
+        .footer-logo:hover .logo-char:nth-child(8) { animation-delay: 0.21s; }
+        .footer-logo:hover .logo-char:nth-child(9) { animation-delay: 0.24s; }
+        .footer-logo:hover .logo-char:nth-child(10) { animation-delay: 0.27s; }
+        .footer-logo:hover .logo-char:nth-child(11) { animation-delay: 0.3s; }
+        .footer-logo:hover .logo-char:nth-child(12) { animation-delay: 0.33s; }
+        .footer-logo:hover .logo-char:nth-child(13) { animation-delay: 0.36s; }
+        .footer-logo:hover .logo-char:nth-child(14) { animation-delay: 0.39s; }
+        .footer-logo:hover .logo-char:nth-child(15) { animation-delay: 0.42s; }
+        @keyframes logoCharWave {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Sidebar Overlay für Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .fade-in {
@@ -441,6 +498,137 @@
             opacity: 1 !important;
             transform: translateY(0) !important;
         }
+
+        /* ============================================
+           RESPONSIVE: Tablet (max-width: 1024px)
+           ============================================ */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay { display: block; }
+            .main-content { margin-left: 0; border-left: none; }
+            .mobile-header { display: flex; }
+            .hero { padding-top: 80px; min-height: 55vh; }
+            .content-section { padding: 2rem 1.5rem; }
+            h1 { font-size: 2.25rem; }
+            h2 { font-size: 1.75rem; margin-top: 2.5rem; }
+            h3 { font-size: 1.4rem; margin-top: 2rem; }
+            pre { border-radius: 8px; padding: 1rem; }
+            pre code { font-size: 0.78rem; }
+            .code-header { border-radius: 8px 8px 0 0; }
+            .code-header + pre { border-radius: 0 0 8px 8px; }
+        }
+
+        /* ============================================
+           RESPONSIVE: Kleine Tablets / Große Phones
+           ============================================ */
+        @media (max-width: 768px) {
+            body { font-size: 15.5px; line-height: 1.65; }
+            .hero { min-height: 50vh; padding: 80px 1.5rem 2.5rem; }
+            .hero h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); }
+            .hero p { font-size: 1.05rem; }
+            .hero-stats { gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+            .stat-number { font-size: 1.6rem; }
+            .stat-label { font-size: 0.78rem; }
+            .content-section { padding: 1.5rem 1rem; }
+            .phase-header-block { padding: 1.5rem; border-radius: 12px; }
+            .phase-header-block h2 { font-size: 1.5rem; }
+            .phase-meta { gap: 0.5rem; }
+            .info-box { padding: 1.25rem; }
+            .step-box { padding: 1.25rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+            h4 { font-size: 1.1rem; }
+            ul, ol { padding-left: 1.25rem; }
+            pre { padding: 0.75rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            pre code { font-size: 0.75rem; line-height: 1.5; white-space: pre; word-break: normal; }
+            .section-divider { margin: 3rem 0; }
+        }
+
+        /* ============================================
+           RESPONSIVE: Phones (max-width: 480px)
+           ============================================ */
+        @media (max-width: 480px) {
+            body { font-size: 15px; line-height: 1.6; }
+            .mobile-header { height: 54px; padding: 0 1rem; }
+            .hero { min-height: 45vh; padding: 70px 1rem 2rem; }
+            .hero-badge { font-size: 0.7rem; padding: 0.3rem 0.6rem; }
+            .hero h1 { font-size: clamp(1.5rem, 6vw, 2rem); margin-bottom: 0.75rem; }
+            .hero p { font-size: 0.95rem; }
+            .hero-stats { gap: 1rem; }
+            .stat-number { font-size: 1.4rem; }
+            .content-section { padding: 1.25rem 0.75rem; }
+            .phase-header-block { padding: 1.25rem; border-radius: 10px; }
+            .phase-header-block h2 { font-size: 1.35rem; }
+            .phase-header-block p { font-size: 0.95rem; }
+            .phase-tag, .phase-days { font-size: 0.7rem; padding: 0.2rem 0.6rem; }
+            h2 { font-size: 1.35rem; margin-top: 2rem; }
+            h3 { font-size: 1.15rem; margin-top: 1.5rem; }
+            h4 { font-size: 1rem; margin-top: 1.5rem; }
+            p { margin-bottom: 1.25rem; }
+            ul, ol { padding-left: 1rem; }
+            li { margin-bottom: 0.5rem; }
+            .info-box { padding: 1rem; border-radius: 0 8px 8px 0; }
+            .step-box { padding: 1rem; border-radius: 8px; }
+            pre { padding: 0.6rem; border-radius: 6px; margin-bottom: 1.25rem; }
+            pre code { font-size: 0.7rem; line-height: 1.45; }
+            .code-header { font-size: 0.68rem; padding: 0.5rem 0.75rem; border-radius: 6px 6px 0 0; }
+            .code-header + pre { border-radius: 0 0 6px 6px; }
+            code { font-size: 0.82em; padding: 0.1rem 0.3rem; }
+            .sidebar { width: 260px; }
+            .sidebar-nav a { font-size: 0.85rem; padding: 0.5rem 1.25rem; }
+            .sidebar-nav .nav-topic { padding-left: 1.75rem; font-size: 0.8rem; }
+            .sidebar-nav .nav-phase { padding: 1.25rem 1.25rem 0.4rem; font-size: 0.7rem; }
+            .section-divider { margin: 2.5rem 0; }
+        }
+
+        /* ============================================
+           RESPONSIVE: Sehr kleine Phones (max-width: 375px)
+           ============================================ */
+        @media (max-width: 375px) {
+            body { font-size: 14.5px; }
+            .hero { padding: 64px 0.75rem 1.5rem; }
+            .hero h1 { font-size: 1.4rem; }
+            .hero p { font-size: 0.9rem; }
+            .hero-stats { flex-direction: column; align-items: center; gap: 0.75rem; }
+            .stat-number { font-size: 1.2rem; }
+            .content-section { padding: 1rem 0.6rem; }
+            .phase-header-block { padding: 1rem; }
+            .phase-header-block h2 { font-size: 1.2rem; }
+            pre code { font-size: 0.65rem; }
+            .sidebar { width: 240px; }
+        }
+
+        /* ============================================
+           safe-area für Phones mit Notch
+           ============================================ */
+        @supports (padding: env(safe-area-inset-top)) {
+            .mobile-header {
+                padding-top: env(safe-area-inset-top);
+                height: calc(60px + env(safe-area-inset-top));
+            }
+            @media (max-width: 1024px) {
+                .hero {
+                    padding-top: calc(80px + env(safe-area-inset-top));
+                }
+            }
+        }
+
+        /* ============================================
+           Reduzierte Animationen (Accessibility)
+           ============================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .fade-in { transition: none; }
+            .js-hide { opacity: 1; transform: none; }
+        }
     </style>
 </head>
 <body>
@@ -448,8 +636,10 @@
         <div class="mobile-logo" style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.1rem;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple),var(--accent-cyan));background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:logoGradientShift 4s linear infinite;">
             <span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(10px);animation:logoCharReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;">&lt;</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(10px);animation:logoCharReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;">H</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(10px);animation:logoCharReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;">H</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(10px);animation:logoCharReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;"> </span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(10px);animation:logoCharReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;">/</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(10px);animation:logoCharReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;">&gt;</span><span class="logo-cursor" style="display:inline-block;width:2px;height:1em;background:var(--accent-cyan);margin-left:2px;vertical-align:text-bottom;opacity:0;animation:logoCursorBlink 1s step-end infinite, logoCursorAppear 0.3s ease 0.8s forwards;box-shadow:0 0 8px var(--accent-cyan);"></span>
         </div>
-        <button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
     </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="page-wrapper">
         <aside class="sidebar">
@@ -3407,49 +3597,6 @@ __m128 HitMask = _mm_cmple_ps(tMin, tMax);
                     <div class="footer-logo" style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.5rem;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple),var(--accent-orange),var(--accent-cyan));background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;position:relative;animation:footerGradientShift 6s linear infinite;margin-bottom:1rem;">
                         <span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;">&lt;</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s forwards;">H</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.16s forwards;">a</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.24s forwards;">n</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.32s forwards;">d</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;">m</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.48s forwards;">a</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.56s forwards;">d</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.64s forwards;">e</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.72s forwards;">H</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s forwards;">e</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.88s forwards;">r</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.96s forwards;">o</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.04s forwards;">/</span><span class="logo-char" style="display:inline-block;opacity:0;transform:translateY(15px);animation:logoCharReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.12s forwards;">&gt;</span><span class="logo-cursor" style="display:inline-block;width:3px;height:1em;background:var(--accent-cyan);margin-left:3px;vertical-align:text-bottom;opacity:0;animation:logoCursorBlink 0.8s step-end infinite, logoCursorAppear 0.3s ease 1.8s forwards;box-shadow:0 0 12px var(--accent-cyan);"></span>
                     </div>
-                    <style>
-                        @keyframes footerGradientShift {
-                            0% { background-position: 0% 50%; }
-                            100% { background-position: 300% 50%; }
-                        }
-                        .footer-logo::before {
-                            content: '';
-                            position: absolute;
-                            inset: -8px -12px;
-                            background: radial-gradient(ellipse at center, rgba(34,211,238,0.15) 0%, transparent 70%);
-                            opacity: 0;
-                            animation: footerGlowPulse 3s ease-in-out infinite;
-                            pointer-events: none;
-                            border-radius: 8px;
-                        }
-                        @keyframes footerGlowPulse {
-                            0%, 100% { opacity: 0.3; transform: scale(0.95); }
-                            50% { opacity: 0.7; transform: scale(1.05); }
-                        }
-                        .footer-logo:hover .logo-char {
-                            animation: logoCharWave 0.4s ease forwards;
-                        }
-                        .footer-logo:hover .logo-char:nth-child(1) { animation-delay: 0s; }
-                        .footer-logo:hover .logo-char:nth-child(2) { animation-delay: 0.03s; }
-                        .footer-logo:hover .logo-char:nth-child(3) { animation-delay: 0.06s; }
-                        .footer-logo:hover .logo-char:nth-child(4) { animation-delay: 0.09s; }
-                        .footer-logo:hover .logo-char:nth-child(5) { animation-delay: 0.12s; }
-                        .footer-logo:hover .logo-char:nth-child(6) { animation-delay: 0.15s; }
-                        .footer-logo:hover .logo-char:nth-child(7) { animation-delay: 0.18s; }
-                        .footer-logo:hover .logo-char:nth-child(8) { animation-delay: 0.21s; }
-                        .footer-logo:hover .logo-char:nth-child(9) { animation-delay: 0.24s; }
-                        .footer-logo:hover .logo-char:nth-child(10) { animation-delay: 0.27s; }
-                        .footer-logo:hover .logo-char:nth-child(11) { animation-delay: 0.3s; }
-                        .footer-logo:hover .logo-char:nth-child(12) { animation-delay: 0.33s; }
-                        .footer-logo:hover .logo-char:nth-child(13) { animation-delay: 0.36s; }
-                        .footer-logo:hover .logo-char:nth-child(14) { animation-delay: 0.39s; }
-                        .footer-logo:hover .logo-char:nth-child(15) { animation-delay: 0.42s; }
-                        @keyframes logoCharWave {
-                            0% { transform: translateY(0); }
-                            50% { transform: translateY(-4px); }
-                            100% { transform: translateY(0); }
-                        }
-                    </style>
                     <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 1.5rem;">
                         Eine deutsche Dokumentation und Schritt-für-Schritt-Anleitung basierend auf dem 
                         legendären Projekt von Casey Muratori.
@@ -3614,6 +3761,11 @@ __m128 HitMask = _mm_cmple_ps(tMin, tMax);
             }
 
             spawn(x, y, type = 'spark') {
+                // Limit: max 50 Partikel gleichzeitig (Performance-Schutz)
+                if (this.particles.length >= 50) return;
+                // Auf Tablets keine Partikel
+                if (window.innerWidth <= 768) return;
+
                 const colors = ['#22d3ee', '#c084fc', '#fb923c', '#f87171', '#ffffff'];
                 const color = colors[Math.floor(Math.random() * colors.length)];
                 
@@ -3878,12 +4030,59 @@ __m128 HitMask = _mm_cmple_ps(tMin, tMax);
         }
 
         /**
+         * MOBILE DETECTION & MENU
+         */
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                         || window.innerWidth <= 1024;
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const isOpen = sidebar.classList.toggle('open');
+            if (isOpen) {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Overlay click schließt Sidebar
+        document.getElementById('sidebarOverlay')?.addEventListener('click', closeMobileMenu);
+
+        /**
          * EVENT MANAGEMENT
          */
         document.addEventListener('mousemove', (e) => {
             mousePosition.x = e.clientX + window.scrollX;
             mousePosition.y = e.clientY + window.scrollY;
         });
+
+        // Touch-Support für mobile Geräte
+        if (isTouchDevice) {
+            document.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 0) {
+                    mousePosition.x = e.touches[0].clientX + window.scrollX;
+                    mousePosition.y = e.touches[0].clientY + window.scrollY;
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchend', () => {
+                // Mausposition weit weg setzen damit Buchstaben zurückkehren
+                mousePosition.x = -5000;
+                mousePosition.y = -5000;
+            }, { passive: true });
+        }
 
         // Verhindert Performance-Einbrüche bei Resize
         let resizeDebounce;
@@ -3909,17 +4108,21 @@ __m128 HitMask = _mm_cmple_ps(tMin, tMax);
             setTimeout(() => {
                 document.getElementById('sidebarLogo')?.classList.add('animate');
                 document.getElementById('heroLogo')?.classList.add('animate');
-                
-                // Startet den Motor nach der Intro-Animation
+
+                // Auf Mobile: Partikel deaktivieren & reduzierte Agent-Physik
+                const skipEngine = window.innerWidth <= 480;
+
                 setTimeout(() => {
-                    initEngine();
-                    mainLoop();
+                    if (!skipEngine) {
+                        initEngine();
+                        mainLoop();
+                    }
                 }, 2200);
             }, 300);
         });
 
         /**
-         * STANDARD WEBSITE FUNKTIONEN (Surgical Clean)
+         * STANDARD WEBSITE FUNKTIONEN
          */
         const sections = document.querySelectorAll('section[id], div[id]');
         const navLinks = document.querySelectorAll('.sidebar-nav a');
@@ -3956,11 +4159,9 @@ __m128 HitMask = _mm_cmple_ps(tMin, tMax);
             fadeObserver.observe(el);
         });
 
-        // Sidebar Handling
+        // Sidebar-Links schließen auf Mobile das Menü
         document.querySelectorAll('.sidebar-nav a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.sidebar').classList.remove('open');
-            });
+            link.addEventListener('click', closeMobileMenu);
         });
     </script>
 </body>
